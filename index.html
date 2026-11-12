@@ -3,10 +3,266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CA Briefing">
 <title>Canadian Financial Briefing</title>
+<style>
+  :root {
+    color-scheme: light;
+    --cream: #f8fafd;
+    --card: #ffffff;
+    --ink: #2d3340;
+    --muted: #93a0ad;
+    --coral: #e386ae;
+    --coral-light: #fdeaf2;
+    --amber: #6fb0dd;
+    --amber-light: #e7f3fb;
+    --rose: #e386ae;
+    --rose-light: #fdeaf2;
+    --sand: #eef6fb;
+    --up: #5fa97e;
+    --down: #d98a9a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    padding: 28px 20px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  .hero {
+    position: relative;
+    border-radius: 24px;
+    padding: 28px 30px;
+    margin-bottom: 22px;
+    background: linear-gradient(135deg, #fbd4e6 0%, #f6e3f0 35%, #ddeefa 70%, #eef7fd 100%);
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(255,255,255,0.35), transparent 55%);
+  }
+  .hero-inner { position: relative; }
+  .pill-date {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.6);
+    color: #70566b;
+    padding: 5px 12px;
+    border-radius: 999px;
+    backdrop-filter: blur(2px);
+  }
+  .hero h1 {
+    font-size: 28px;
+    margin: 12px 0 10px;
+    color: #2d3340;
+    letter-spacing: -0.01em;
+  }
+  .hero .brief {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #4a5260;
+    max-width: 640px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 30px 2px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); }
+
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 620px) { .snapshot-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(31,36,32,0.04), 0 8px 20px -14px rgba(31,36,32,0.15);
+  }
+  .stat-label { font-size: 10.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-value { font-size: 19px; font-weight: 700; color: var(--ink); margin-top: 4px; letter-spacing: -0.01em; }
+  .stat-change { font-size: 11.5px; margin-top: 3px; font-weight: 600; }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  .flat { color: var(--muted); }
+
+  .news-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(31,36,32,0.04), 0 10px 24px -16px rgba(31,36,32,0.18);
+  }
+  .news-card h3 { margin: 0 0 9px; font-size: 16.5px; letter-spacing: -0.005em; }
+  .news-card h3 a { color: #2d3340; text-decoration: none; border-bottom: 2px solid var(--coral); padding-bottom: 1px; }
+  .news-card h3 a:hover { color: var(--coral); }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .tag.ca { background: var(--coral-light); color: #c3407e; }
+  .tag.us { background: var(--amber-light); color: #2a7cad; }
+  .tag.vc { background: var(--amber-light); color: #2a7cad; }
+  .row { font-size: 13.5px; line-height: 1.6; margin: 6px 0; color: #454c58; }
+  .row b { color: #2d3340; }
+
+  .watch-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 13px 16px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: 0 1px 2px rgba(31,36,32,0.04);
+    border-left: 3px solid var(--rose);
+  }
+  .watch-card b { color: #c3407e; }
+
+  .term-card {
+    background: linear-gradient(135deg, var(--amber-light) 0%, var(--coral-light) 100%);
+    border-radius: 20px;
+    padding: 20px 22px;
+  }
+  .term-card .term-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2a7cad;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .term-card .term-name::before {
+    content: "✦";
+    font-size: 13px;
+  }
+  .term-card .term-def { font-size: 13.5px; line-height: 1.6; color: #454c58; }
+
+  footer { margin-top: 30px; font-size: 11.5px; color: var(--muted); text-align: center; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+</style>
 </head>
-<body style="font-family: -apple-system, sans-serif; background:#f8fafd; padding:40px; text-align:center; color:#2d3340;">
-  <h1>Canadian Financial Briefing</h1>
-  <p>This page will update automatically each weekday morning.</p>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="pill-date">Wednesday, November 11, 2026</span>
+      <h1>Canadian Financial Briefing</h1>
+      <div class="brief">Today in plain English: the Bank of Canada raised interest rates for the first time in 3 years, stocks bounced back after a rough week, and more money is flowing into Canadian startups.</div>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="dot"></span>Market Snapshot</div>
+  <div class="snapshot-grid">
+    <div class="stat-card">
+      <div class="stat-label">S&amp;P/TSX Composite</div>
+      <div class="stat-value">36,446.26</div>
+      <div class="stat-change up">+657.17 (Nov 9 close)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">S&amp;P 500</div>
+      <div class="stat-value">7,549.94</div>
+      <div class="stat-change up">+173.08 (Nov 9 close)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Nasdaq</div>
+      <div class="stat-value">25,253.14</div>
+      <div class="stat-change up">+673.71 (Nov 9 close)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">CAD / USD</div>
+      <div class="stat-value">~70.8&cent;</div>
+      <div class="stat-change flat">approx., date unconfirmed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">BoC Policy Rate</div>
+      <div class="stat-value">2.50%</div>
+      <div class="stat-change up">+25bps on Oct 28</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">GoC 10-Year Yield</div>
+      <div class="stat-value">—</div>
+      <div class="stat-change flat">not available today</div>
+    </div>
+  </div>
+  <div class="note">Figures from most recent confirmed close (Nov 9, 2026) via BNN Bloomberg / CTV News market wraps; same-day Nov 11 closes weren't yet available at research time.</div>
+
+  <div class="section-title"><span class="dot"></span>Developments</div>
+
+  <div class="news-card">
+    <span class="tag ca">Canada</span>
+    <h3><a href="https://obj.ca/bank-of-canada-leaves-key-interest-rate-unchanged-at-2-25/" target="_blank" rel="noopener">Canada's central bank raised interest rates for the first time in 3 years</a></h3>
+    <div class="row"><b>What happened:</b> On Oct 28, the Bank of Canada bumped its key rate up a notch, to 2.50%, because rising oil prices are pushing inflation back up. Most experts think they'll pause at their next meeting on Dec 9.</div>
+    <div class="row"><b>Why it matters:</b> For years rates were flat or falling — this is the first sign the Bank is worried about prices rising again.</div>
+    <div class="row"><b>What it means for you:</b> Borrowing (mortgages, credit lines) gets a little pricier. Savings accounts and GICs should pay a bit more interest.</div>
+  </div>
+
+  <div class="news-card">
+    <span class="tag vc">VC / Private Markets</span>
+    <h3><a href="https://thelogic.co/news/canada-venture-capital-startups-2025/" target="_blank" rel="noopener">More money is going into Canadian startups than it has in years</a></h3>
+    <div class="row"><b>What happened:</b> Canadian startups raised $2.69 billion in the first half of 2026 — 17% more than last year, and the first increase in 5 years.</div>
+    <div class="row"><b>Why it matters:</b> After a long slump, investors are warming back up to Canadian startups.</div>
+    <div class="row"><b>What it means for you:</b> Good news if you're connected to startups — more funding floating around usually means more jobs and opportunities in that world.</div>
+  </div>
+
+  <div class="news-card">
+    <span class="tag ca">Canada</span>
+    <h3><a href="https://dealroom.co/news/164084-inovia-raises-200m-first-close-for-ai-focused-sixth-venture-fund/" target="_blank" rel="noopener">One of Canada's biggest VC firms just raised $200 million for AI bets</a></h3>
+    <div class="row"><b>What happened:</b> Inovia Capital closed the first $200M chunk of a new fund focused on AI startups.</div>
+    <div class="row"><b>Why it matters:</b> Big Canadian investors are still able to raise money, even though fundraising has been tough globally.</div>
+    <div class="row"><b>What it means for you:</b> More cash chasing Canadian AI companies — could push their valuations up.</div>
+  </div>
+
+  <div class="news-card">
+    <span class="tag us">Global / Markets</span>
+    <h3><a href="https://www.bnnbloomberg.ca/markets/2026/11/09/sptsx-composite-up-more-than-500-points-us-stock-markets-also-head-higher/" target="_blank" rel="noopener">Stocks bounced back hard after a rough week</a></h3>
+    <div class="row"><b>What happened:</b> The TSX and major US markets jumped on Nov 9, recovering from a week where tech stocks (Nasdaq) had dropped over 3%.</div>
+    <div class="row"><b>Why it matters:</b> Big swings up and down lately mean markets are nervous right now, not calm.</div>
+    <div class="row"><b>What it means for you:</b> If you have investments, don't be surprised by more ups and downs than usual — try not to overreact to any single day.</div>
+  </div>
+
+  <div class="section-title"><span class="dot"></span>What to Watch Next</div>
+  <div class="watch-card"><b>Dec 9 — Bank of Canada's next rate decision:</b> will they pause, as most economists expect, or hike again? That will set the tone for borrowing costs into 2027.</div>
+  <div class="watch-card"><b>Continued market swings:</b> after last week's drop and this week's rally, expect choppier-than-normal trading to keep going in the near term.</div>
+  <div class="watch-card"><b>Bond yield data gap:</b> the 10-year Government of Canada yield wasn't available today — worth checking tomorrow, since it moves alongside mortgage rates.</div>
+
+  <div class="section-title"><span class="dot"></span>Learn One Thing Today</div>
+  <div class="term-card">
+    <div class="term-name">Basis Point (bps)</div>
+    <div class="term-def">A tiny unit used for interest rates: 1 basis point = 0.01%. So when the Bank of Canada raises rates by "25 basis points," that just means +0.25%. Bankers use this instead of percentages because it avoids confusion — "raised by 25%" would sound like a huge jump, but "25bps" is precise and small.</div>
+  </div>
+
+  <footer>
+    Sources: BNN Bloomberg, CTV News, Ottawa Business Journal, The Logic, Dealroom · Last updated Nov 11, 2026, 9:12 AM MT
+  </footer>
+</div>
 </body>
 </html>
