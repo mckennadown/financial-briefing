@@ -39,4 +39,3 @@ jobs:
 
             Write the result to index.html, then commit and push it with a
             message like "Daily briefing update: <date>".
-          allowed_tools: "Bash,Edit,Write,WebSearch"
