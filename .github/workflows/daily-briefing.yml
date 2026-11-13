@@ -1,0 +1,41 @@
+name: Daily Canadian Financial Briefing
+
+on:
+  schedule:
+    - cron: "0 16 * * 1-5"   # 9am MST weekdays (shifts to 10am during MDT)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are updating the "Canadian Financial Briefing" static site in this
+            repo. Produce today's briefing and publish it.
+
+            Research 3-5 of the most important current developments in Canadian
+            finance/economy (Bank of Canada, CPI/GDP/jobs, banks, fiscal policy,
+            CAD, bond yields, TSX), US/global items that materially affect Canada,
+            and Canadian VC/private markets. Use no more than 8 web searches.
+            Reputable sources only. Never invent figures.
+
+            Plain language, no unexplained jargon, short sentences, "What
+            happened / Why it matters / What it means for you" per item.
+
+            Read the current index.html in this repo and reuse its exact <head>
+            and <style> block verbatim. Only replace the <body> content: date,
+            one-sentence summary, 6 market snapshot stat cards, 3-5 news cards,
+            a "What to Watch Next" section, a "Learn One Thing Today" section
+            with one new financial term, and the footer.
+
+            Write the result to index.html, then commit and push it with a
+            message like "Daily briefing update: <date>".
+          allowed_tools: "Bash,Edit,Write,WebSearch"
